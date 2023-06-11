@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-class sem
+class sem // 信号量
 {
 public:
     sem()
@@ -38,7 +38,7 @@ public:
 private:
     sem_t m_sem;
 };
-class locker
+class locker  // 互斥锁
 {
 public:
     locker()

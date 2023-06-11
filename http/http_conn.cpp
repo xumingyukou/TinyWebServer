@@ -50,9 +50,9 @@ void http_conn::initmysql_result(connection_pool *connPool)
 //对文件描述符设置非阻塞
 int setnonblocking(int fd)
 {
-    int old_option = fcntl(fd, F_GETFL);
-    int new_option = old_option | O_NONBLOCK;
-    fcntl(fd, F_SETFL, new_option);
+    int old_option = fcntl(fd, F_GETFL);  // 获得fd状态标记
+    int new_option = old_option | O_NONBLOCK;  // 非阻塞
+    fcntl(fd, F_SETFL, new_option);  // 设置新状态
     return old_option;
 }
 
@@ -73,14 +73,14 @@ void addfd(int epollfd, int fd, bool one_shot, int TRIGMode)
     setnonblocking(fd);
 }
 
-//从内核时间表删除描述符
+//从内核事件表删除描述符
 void removefd(int epollfd, int fd)
 {
     epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, 0);
     close(fd);
 }
 
-//将事件重置为EPOLLONESHOT
+//将事件重置为EPOLLONESHOT，EPOLLONESHOT事件可以使得操作系统最多触发其上注册的一个可读、可写、异常的事件，且只触发一次
 void modfd(int epollfd, int fd, int ev, int TRIGMode)
 {
     epoll_event event;
@@ -221,9 +221,11 @@ bool http_conn::read_once()
     {
         while (true)
         {
+            // 从套接字接收数据，存储在m_read_buf缓冲区
             bytes_read = recv(m_sockfd, m_read_buf + m_read_idx, READ_BUFFER_SIZE - m_read_idx, 0);
             if (bytes_read == -1)
             {
+                // 非阻塞ET模式下，需要一次性将数据读完
                 if (errno == EAGAIN || errno == EWOULDBLOCK)
                     break;
                 return false;

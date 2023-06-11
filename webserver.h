@@ -38,7 +38,7 @@ public:
     void timer(int connfd, struct sockaddr_in client_address);
     void adjust_timer(util_timer *timer);
     void deal_timer(util_timer *timer, int sockfd);
-    bool dealclinetdata();
+    bool dealclientdata();
     bool dealwithsignal(bool& timeout, bool& stop_server);
     void dealwithread(int sockfd);
     void dealwithwrite(int sockfd);
@@ -49,7 +49,7 @@ public:
     char *m_root;
     int m_log_write;
     int m_close_log;
-    int m_actormodel;
+    int m_actormodel;  // reactor or proactor
 
     int m_pipefd[2];
     int m_epollfd;
@@ -71,8 +71,8 @@ public:
 
     int m_listenfd;
     int m_OPT_LINGER;
-    int m_TRIGMode;
-    int m_LISTENTrigmode;
+    int m_TRIGMode;  // 控制m_LISTENTrigmode和m_CONNTrigmode是ET还是LT
+    int m_LISTENTrigmode;  
     int m_CONNTrigmode;
 
     //定时器相关

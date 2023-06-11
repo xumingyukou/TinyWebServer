@@ -34,21 +34,27 @@ void connection_pool::init(string url, string User, string PassWord, string DBNa
 
 	for (int i = 0; i < MaxConn; i++)
 	{
-		MYSQL *con = NULL;
-		con = mysql_init(con);
+		MYSQL *con = NULL;  // 对应标记要操作的数据库
+		con = mysql_init(con);  // 初始化一个MYSQL*对象来链接mysql服务端
 
 		if (con == NULL)
 		{
+			// 初始化失败
 			LOG_ERROR("MySQL Error");
 			exit(1);
 		}
+
+		// 连接数据库
 		con = mysql_real_connect(con, url.c_str(), User.c_str(), PassWord.c_str(), DBName.c_str(), Port, NULL, 0);
 
 		if (con == NULL)
 		{
+			// 连接失败
 			LOG_ERROR("MySQL Error");
 			exit(1);
 		}
+
+		// 放入连接池
 		connList.push_back(con);
 		++m_FreeConn;
 	}
