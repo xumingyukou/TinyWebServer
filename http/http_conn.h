@@ -52,20 +52,20 @@ public:
     };
     enum HTTP_CODE  // HTTP状态代码
     {
-        NO_REQUEST,
-        GET_REQUEST,
-        BAD_REQUEST,
+        NO_REQUEST,  // 请求不完整，需要继续读取请求报文数据
+        GET_REQUEST,  // 获得了完整的HTTP请求
+        BAD_REQUEST,  // HTTP请求报文有语法错误
         NO_RESOURCE,
         FORBIDDEN_REQUEST,
         FILE_REQUEST,
-        INTERNAL_ERROR,
+        INTERNAL_ERROR,  // 服务器内部错误，该结果在主状态机逻辑switch的default下，一般不会触发
         CLOSED_CONNECTION
     };
     enum LINE_STATUS  // 从状态机的状态
     {
-        LINE_OK = 0,
-        LINE_BAD,
-        LINE_OPEN
+        LINE_OK = 0,  // 完整读取一行
+        LINE_BAD,  // 报文语法有误
+        LINE_OPEN  // 读取的行不完整
     };
 
 public:
@@ -75,7 +75,7 @@ public:
 public:
     void init(int sockfd, const sockaddr_in &addr, char *, int, int, string user, string passwd, string sqlname);
     void close_conn(bool real_close = true);
-    void process();
+    void process();  // 子线程调用该函数对任务进行处理
     bool read_once();  // 循环读取客户数据，直到无数据可读或对方关闭连接
     bool write();
     sockaddr_in *get_address()
